@@ -28,8 +28,8 @@
 
     // Script CONSTANTS.
     // Regex patterns for Task / Subtask
-    var MAINTASKPATTERN = /^(Task|Phase)\s*\d+:\s*.*/i;
-    var SUBTASKPATTERN = /^(Task|Phase|Subtask) \d\.\d:.*/i;
+    var MAINTASKPATTERN = /^(Task|Phase)\s*\d+:\s*.*/i; // case insensitive
+    var SUBTASKPATTERN = /^(Task|Phase|Subtask) \d\.\d:.*/i; // case insensitive
     var BULLETPATTERN = /^\s*•\s/
     var SUBBULLETPATTERN = /^\s*o\s/
 
@@ -39,8 +39,28 @@
     var H3 = STYLEGROUP.paragraphStyles.itemByName("H3 - Orange");
     var H4 = STYLEGROUP.paragraphStyles.itemByName("H4 - Grey");
     var BODY = STYLEGROUP.paragraphStyles.itemByName("Body Text");
-    var BULLET = STYLEGROUP.paragraphStyles.itemByName("Basic-Bullets");
-    var SUBBULLET = STYLEGROUP.paragraphStyles.itemByName("Basic-SubBullets");
+
+    var baseBULLET = STYLEGROUP.paragraphStyles.itemByName("Basic-Bullets");
+    var baseSUBBULLET = STYLEGROUP.paragraphStyles.itemByName("Basic-SubBullets");
+
+    var BULLET = STYLEGROUP.paragraphStyles.itemByName("Ital-Basic-Bullets")
+    var SUBBULLET = STYLEGROUP.paragraphStyles.itemByName("Ital-Basic-SubBullets")
+
+    if (BULLET.isValid) {
+        BULLET = STYLEGROUP.paragraphStyles.itemByName("Ital-Basic-Bullets")
+    } else {
+        BULLET = STYLEGROUP.paragraphStyles.itemByName("Basic-Bullets").duplicate()
+        BULLET.name = "Ital-Basic-Bullets"
+        BULLET.fontStyle = "Italic"
+    }
+    if (SUBBULLET.isValid) {
+        SUBBULLET = STYLEGROUP.paragraphStyles.itemByName("Ital-Basic-SubBullets")
+    } else {
+        SUBBULLET = STYLEGROUP.paragraphStyles.itemByName("Basic-SubBullets").duplicate()
+        SUBBULLET.name = "Ital-Basic-SubBullets"
+        SUBBULLET.fontStyle = "Italic"
+    }
+
 
     // Helper function to determine what paragraph style a string should get
     // returns an object of text (might be changed) and style (paragraphStyle)
@@ -106,13 +126,10 @@
     }
 
     // Execute
-
     selection = doc.selection[0]; // This variable should always be a Text Frame
-    set_story(selection)
+    set_story(selection) // Sets newTextFrame, story, and newStory
+    text = story.paragraphs // Text is a list of paragraph objects
 
-    text = story.paragraphs
-
-    // Text is a list of paragraph objects
     if (text.length > 0) {
         for (var i = 0; i < text.length; i++) {
             // Now we have a paragraph, in string format
