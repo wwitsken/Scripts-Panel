@@ -23,23 +23,6 @@
     }
     doc = app.activeDocument;
 
-    // Check if we have an actual selection & bock grabs the story and text
-    // Also sets up new text frame same size on top of the old one, which we will use to input our new story
-    function verify_selection(s) {
-        // Making sure that we're actually capturing some text
-        if (s instanceof TextFrame) {
-            throw new Error("Select document text, not TextFrame")
-        } else if (s instanceof Text) {
-            if (s.contents.length < 1) {
-                throw new Error("There is no text in this text selection")
-            } else {
-                return s;
-            }
-        } else {
-            throw new Error("Select document text before running this script")
-        }
-    }
-
     // Helper function for formatting resume project strings to get rid of redundant information
     function modifyString(str) {
         if (str.charAt(str.length - 1) === '\n' || '\r') {
@@ -57,9 +40,23 @@
         return str + '\r';
     }
 
+    // Verify the selection, make sure it is either text or textframe
+    function verify_selection(s) {
+        // Making sure that we're actually capturing some text
+        if (s instanceof TextFrame || s instanceof Text) {
+            if (s.contents.length < 1) {
+                throw new Error("There is no text in this text selection")
+            } else {
+                return s;
+            }
+        } else {
+            throw new Error("Select document text or textFrame before running this script")
+        }
+    }
+
     // Execute
-    selection = verify_selection(doc.selection[0]); // This variable should always be Text selection
-    text = selection.paragraphs // Text is a list of paragraph objects
+    selection = verify_selection(doc.selection[0])
+    text = selection.parentStory.paragraphs // Text is a list of paragraph objects
 
     if (text.length > 0) {
         // Loop first to change formatting
@@ -74,7 +71,7 @@
                     }
                 }
             } catch (e) {
-                // $.writeln("An error occured: " + e)
+                $.writeln("An error occured: " + e)
             }
         }
     }
